@@ -3,7 +3,7 @@ from .add import add
 from .delete import delete
 from .list import list_data
 from .show import show
-from.infer import infer
+from .infer import infer
 
 
 @click.group()

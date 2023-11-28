@@ -1,19 +1,41 @@
+import typing
+import yaml
+
 from cli.model.data import Data
+from cli.model.base import Serializable
 
 
-class Pipelines:
-    pass
+class Pipelines(Serializable):
+
+    def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
+        return {}
+
+    @classmethod
+    def load(cls, config: typing.Any):
+        return cls()
 
 
-class Infra:
-    pass
+class Infra(Serializable):
+
+    def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
+        return {}
+
+    @classmethod
+    def load(cls, config: typing.Any):
+        return cls()
 
 
-class ML:
-    pass
+class ML(Serializable):
+
+    def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
+        return {}
+
+    @classmethod
+    def load(cls, config: typing.Any):
+        return cls()
 
 
-class DataProduct:
+class DataProduct(Serializable):
 
     def __init__(self, data: Data = None, pipelines: Pipelines = None, infra: Infra = None, ml: ML = None):
         self._data = data or Data()
@@ -37,6 +59,18 @@ class DataProduct:
     def ml(self) -> ML:
         return self._ml
 
+    def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
+        return {
+            'data': self.data.serialize(),
+            'pipelines': self.pipelines.serialize(),
+            'infra': self.infra.serialize(),
+            'ml': self.ml.serialize()
+        }
+
     @classmethod
-    def from_config(cls, config_dir):
-        return DataProduct()
+    def load(cls, config: dict[str, typing.Any]):
+        return DataProduct(
+            data=Data.load(config['data']),
+            ml=ML.load(config['ml']),
+            pipelines=Pipelines.load(config['pipelines']),
+            infra=Infra.load(config['infra']))
