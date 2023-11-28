@@ -1,8 +1,5 @@
 data:
-  sqls:
-  - name: sql-1
-  - name: sql-2
-  - name: sql-3
+  sqls: []
 infra: {}
 ml: {}
 pipelines: {}

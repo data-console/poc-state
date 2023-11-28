@@ -16,12 +16,11 @@ def add_result():
 
 @click.command('sql')
 @click.option('--name', '-n', prompt='Provide unique SQL query name', help='SQL query name')
-@click.option('--from-bigquery', required=False, help='BigQuery saved query reference')
+@click.option('file_name', '--file', required=False, help='SQL file location')
+@click.option('saved_query', '--from-bigquery', required=False, help='BigQuery saved query reference')
 @pass_data_product
-@click.pass_context
-def add_sql(ctx: click.Context, data_product: DataProduct, name: str):
-    data_product.data.add_sql(SQL(name))
-
+def add_sql(data_product: DataProduct, name: str, file_name, saved_query=None):
+    data_product.data.add_sql(SQL(name, file_name or f'data/sqls/{name}.sql', saved_query))
 
 
 @click.command(name='notebook')

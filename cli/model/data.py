@@ -3,7 +3,26 @@ from .base import Entry, Registry, Serializable
 
 
 class SQL(Entry):
-    pass
+
+    def __init__(self, name, file_name, saved_query=None):
+        super().__init__(name)
+        self._file_name = file_name
+        self._saved_query = saved_query
+
+    @property
+    def file_name(self):
+        return self._file_name
+
+    @property
+    def saved_query(self):
+        return self._saved_query
+
+    def serialize(self) -> dict[str, str]:
+        content = super().serialize()
+        content['file_name'] = self.file_name
+        if self.saved_query:
+            content['saved_query'] = self.saved_query
+        return content
 
 
 class SQLRegistry(Registry):

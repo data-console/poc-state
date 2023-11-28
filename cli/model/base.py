@@ -34,7 +34,7 @@ class Entry(Serializable):
     def load(cls, config: typing.Any):
         if 'name' not in config:
             raise AttributeError('missing name attribute')
-        return cls(config['name'])
+        return cls(**config)
 
 
 class Registry(Serializable):
