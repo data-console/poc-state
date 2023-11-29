@@ -1,0 +1,40 @@
+name: Publish catalog-info
+
+on:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  publish-catalog-info:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+      - name: Get next version
+        id: 'bump'
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: allegro-actions/next-version@v1
+      - name: Determinate version
+        id: version
+        run: |
+          ref='refs/tags/'
+          if [[ ${{ github.ref }} == *${ref}* ]]; then
+            echo "tag release detected: ${{ github.ref_name }}"
+            TAG=${{ github.ref_name }}
+            echo "release_version=${TAG#v}" >> $GITHUB_OUTPUT
+          else
+            echo "snapshot version detected: ${{ github.ref_name }}-SNAPSHOT"
+            echo "release_version=${{ steps.bump.outputs.next_version }}" >> $GITHUB_OUTPUT
+          fi
+      - name: Print catalog-info
+        run: python -m cli.main config catalog-info -r ${{ steps.version.outputs.release_version }}
