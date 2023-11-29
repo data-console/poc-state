@@ -1,6 +1,8 @@
 import abc
 import typing
 
+from cli.model.catalog_info import CatalogEntityProvider, Entity
+
 
 class DataProductException(Exception):
     pass
@@ -18,7 +20,7 @@ class Serializable(abc.ABC):
         pass
 
 
-class Entry(Serializable):
+class Entry(Serializable, CatalogEntityProvider):
 
     def __init__(self, name):
         self._name = name
@@ -37,7 +39,7 @@ class Entry(Serializable):
         return cls(**config)
 
 
-class Registry(Serializable):
+class Registry(Serializable, CatalogEntityProvider):
 
     def __init__(self, entries: list[Entry] = None):
         self._existing_entries = entries or []
@@ -57,6 +59,9 @@ class Registry(Serializable):
 
     def serialize(self) -> list[dict[str, str]]:
         return [entry.serialize() for entry in self.entries]
+
+    def to_catalog_entities(self) -> typing.List[Entity]:
+        return sum([entry.to_catalog_entities() for entry in self.entries], [])
 
     @classmethod
     def load(cls, config: typing.Any):

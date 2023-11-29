@@ -1,5 +1,6 @@
 import typing
 from .base import Entry, Registry, Serializable
+from .catalog_info import CatalogEntityProvider, Component, Entity
 
 
 class SQL(Entry):
@@ -24,6 +25,9 @@ class SQL(Entry):
             content['saved_query'] = self.saved_query
         return content
 
+    def to_catalog_entities(self) -> typing.List[Entity]:
+        return [Component(name=self.name, component_type="sql-query")]
+
 
 class SQLRegistry(Registry):
 
@@ -32,7 +36,7 @@ class SQLRegistry(Registry):
         return SQL.load(config)
 
 
-class Data(Serializable):
+class Data(Serializable, CatalogEntityProvider):
 
     def __init__(self, sqls=None):
         self._sqls = sqls or SQLRegistry()
@@ -46,6 +50,9 @@ class Data(Serializable):
 
     def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
         return {'sqls': self.sqls.serialize()}
+
+    def to_catalog_entities(self) -> typing.List[Entity]:
+        return self._sqls.to_catalog_entities()
 
     @classmethod
     def load(cls, config: typing.Any):
