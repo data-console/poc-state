@@ -60,8 +60,8 @@ class Registry(Serializable, CatalogEntityProvider):
     def serialize(self) -> list[dict[str, str]]:
         return [entry.serialize() for entry in self.entries]
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
-        return sum([entry.to_catalog_entities() for entry in self.entries], [])
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
+        return sum([entry.to_catalog_entities(**kwargs) for entry in self.entries], [])
 
     @classmethod
     def load(cls, config: typing.Any):

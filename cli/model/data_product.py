@@ -11,7 +11,7 @@ class Pipelines(Serializable, CatalogEntityProvider):
     def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
         return {}
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
         return []
 
     @classmethod
@@ -24,7 +24,7 @@ class Infra(Serializable, CatalogEntityProvider):
     def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
         return {}
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
         return []
 
     @classmethod
@@ -34,7 +34,7 @@ class Infra(Serializable, CatalogEntityProvider):
 
 class ML(Serializable, CatalogEntityProvider):
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
         return []
 
     def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
@@ -89,12 +89,12 @@ class DataProduct(Serializable, CatalogEntityProvider):
             'ml': self.ml.serialize()
         }
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
-        return ([Component(name=self.name, description=self.description, component_type='data-product')]
-                + self.data.to_catalog_entities()
-                + self.pipelines.to_catalog_entities()
-                + self.ml.to_catalog_entities()
-                + self.infra.to_catalog_entities())
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
+        return ([Component(name=self.name, description=self.description, component_type='data-product', **kwargs)]
+                + self.data.to_catalog_entities(**kwargs)
+                + self.pipelines.to_catalog_entities(**kwargs)
+                + self.ml.to_catalog_entities(**kwargs)
+                + self.infra.to_catalog_entities(**kwargs))
 
     @classmethod
     def load(cls, config: dict[str, typing.Any]):

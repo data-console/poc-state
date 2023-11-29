@@ -25,8 +25,8 @@ class SQL(Entry):
             content['saved_query'] = self.saved_query
         return content
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
-        return [Component(name=self.name, component_type="sql-query")]
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
+        return [Component(name=self.name, component_type="sql-query", **kwargs)]
 
 
 class SQLRegistry(Registry):
@@ -51,8 +51,8 @@ class Data(Serializable, CatalogEntityProvider):
     def serialize(self) -> typing.Union[dict[str, typing.Any], list[typing.Any]]:
         return {'sqls': self.sqls.serialize()}
 
-    def to_catalog_entities(self) -> typing.List[Entity]:
-        return self._sqls.to_catalog_entities()
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
+        return self._sqls.to_catalog_entities(**kwargs)
 
     @classmethod
     def load(cls, config: typing.Any):

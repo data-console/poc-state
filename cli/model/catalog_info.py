@@ -10,6 +10,7 @@ class Entity(abc.ABC):
         self._kind = kind
         self._name = name
         self._description = kwargs.pop('description')
+        self._version = kwargs.pop('version', None)
         self._spec = self.generate_spec(**kwargs)
 
     def to_dict(self):
@@ -19,7 +20,10 @@ class Entity(abc.ABC):
             'metadata': {
                 'name': self._name,
                 'description': self._description,
-                'namespace': 'default'
+                'namespace': 'default',
+                'annotations': {
+                    'allegro.com/version': self._version
+                } if self._version else None
             },
             'spec': self._spec
         }
@@ -68,5 +72,5 @@ class Resource(Entity):
 class CatalogEntityProvider(abc.ABC):
 
     @abc.abstractmethod
-    def to_catalog_entities(self) -> typing.List[Entity]:
+    def to_catalog_entities(self, **kwargs) -> typing.List[Entity]:
         pass
