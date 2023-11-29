@@ -37,4 +37,9 @@ jobs:
             echo "release_version=${{ steps.bump.outputs.next_version }}" >> $GITHUB_OUTPUT
           fi
       - name: Print catalog-info
-        run: python -m cli.main config catalog-info -r ${{ steps.version.outputs.release_version }}
+        run: python -m cli.main config catalog-info -r ${{ steps.version.outputs.release_version }} -o catalog-info.yaml
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: catalog-info
+          path: catalog-info.yaml
