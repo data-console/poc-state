@@ -1,0 +1,11 @@
+data:
+  sqls:
+  - file_name: data/sqls/test-2.sql
+    name: test-2
+  - file_name: data/sqls/test-1.sql
+    name: test-1
+description: PoC of Data Console integration with CLI
+infra: {}
+ml: {}
+name: poc
+pipelines: {}
