@@ -2,6 +2,8 @@ data:
   sqls:
   - file_name: data/sqls/test-2.sql
     name: test-2
+  - file_name: data/sqls/test-123.sql
+    name: test-123
 description: PoC of Data Console integration with CLI
 infra: {}
 ml: {}
