@@ -38,6 +38,7 @@ class DataProductContext:
 def main(ctx, config_dir, options):
     """Data Product CLI which governs Allegro's data product state."""
     ctx.obj = ctx.with_resource(DataProductContext(config_dir))
+    click.echo(f"received default options: {options}")
     if options:
         ctx.default_map = yaml.safe_load(base64.b64decode(options))
 
