@@ -1,9 +1,19 @@
-name: Register Data Product in the Platform
+name: Invoke an action on Data Product
 
 permissions:
   contents: write
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Create branch for changes"
+      message:
+        description: "Commit and PR message"
+      command:
+        description: "Cli command"
+      options:
+        description: "base64 encoded command options"
 
 jobs:
   dispatch:
@@ -11,20 +21,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Show GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+        shell: bash
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
+      - name: Create branch
+        run: git checkout -b ${{ github.event.inputs.branch }}
       - name: Install dependencies
         run: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
-      - name: Verify Data Product State
-        run: python -m cli.main config verify
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          repository: data-console/platform-state
-          event-type: update_state
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+      - name: Execute Data Product CLI command
+        env:
+          DATA_PRODUCT_OPTIONS: ${{ github.event.inputs.options }}
+        run: python -m cli.main ${{ github.event.inputs.command }}
+      - name: commit & push
+        run: |
+          git diff
+          git add -A
+          git config user.email "${{ github.actor }}@allegro.com"
+          git config user.name "{{ github.actor }}"
+          git commit -m "${{ github.event.inputs.message }}"
+          git push --set-upstream origin ${{ github.event.inputs.branch }}
+      - name: create pull request
+        run: gh pr create -B ${{ github.event.inputs.branch }} -H main --title '${{ github.event.inputs.message }}' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
