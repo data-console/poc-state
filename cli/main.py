@@ -1,6 +1,7 @@
 import click
 import pathlib
 import yaml
+import base64
 
 from cli.commands import data, ml, infra, pipeline, config
 from cli.model.data_product import DataProduct
@@ -29,10 +30,17 @@ class DataProductContext:
               envvar='DATA_PRODUCT_HOME',
               default='.dp',
               type=click.Path(path_type=pathlib.Path, file_okay=False, dir_okay=True, exists=True, writable=True, readable=True))
+@click.option('options', '--options',
+              help='Data Product options base64 encoded',
+              envvar='DATA_PRODUCT_OPTIONS',
+              required=False)
 @click.pass_context
-def main(ctx, config_dir):
+def main(ctx, config_dir, options):
     """Data Product CLI which governs Allegro's data product state."""
     ctx.obj = ctx.with_resource(DataProductContext(config_dir))
+    if options:
+        ctx.default_map = yaml.safe_load(base64.b64decode(options))
+
 
 
 main.add_command(infra)
